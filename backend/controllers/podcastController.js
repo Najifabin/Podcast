@@ -16,7 +16,7 @@ exports.createPodcastController = async (req,res)=>{
 
         // Create the podcast document
         const newPodcast = new podcasts({
-            title,desc,tags,format,category,podcastImg,
+            title,desc,tags,format,category,podcastImg,userId
         });
 
         const savedPodcast = await newPodcast.save();
@@ -25,16 +25,23 @@ exports.createPodcastController = async (req,res)=>{
         // Process and save episodes
         const episodes = [];
         const episodeFiles = req.files.filter(file => file.fieldname.startsWith('episodes['));
+         const episodeCount = Math.max(
+            ...episodeFiles.map(file =>
+                parseInt(file.fieldname.match(/episodes\[(\d+)\]\[podcastFile\]/)?.[1] || 0, 10)
+            )
+        );
 
-        for (let i = 0; i < episodeFiles.length; i++) {
-            const episodeData = req.body.episodes[i]
-            const podcastFile = episodeFiles.find(file => file.fieldname === `episodes[${i}][podcastFile]`)?.path || null;
-
-            if (episodeData.title && episodeData.desc && podcastFile) {
+        for (let i = 0; i < episodeCount; i++) {
+            const episodeTitle = req.body[`episodes[${i}][title]`];
+            const episodeDesc = req.body[`episodes[${i}][desc]`];
+            const podcastFile = req.files.find(file => file.fieldname === `episodes[${i}][podcastFile]`)?.path || null;
+            console.log(episodeTitle , episodeDesc , podcastFile);
+            
+            if (episodeTitle && episodeDesc && podcastFile) {
                 const newEpisode = new episodes({
                     podcast: savedPodcast._id,
-                    title: episodeData.title,
-                    desc: episodeData.desc,
+                    title: episodeTitle,
+                    desc: episodeDesc,
                     podcastFile,
                 });
                 const savedEpisode = await newEpisode.save();
