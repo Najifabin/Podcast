@@ -3,15 +3,10 @@ const mongoose = require('mongoose')
 const podcastSchema = new mongoose.Schema({
     title:{
         type:String,
-        required:true
+        required:true,
     },
     desc:{
         type:String,
-        required:true
-    },
-    creator:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"users",
         required:true
     },
     tags:{
@@ -30,14 +25,15 @@ const podcastSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    views:{
-        type:Number,
-        default:0
-    },
+    
     episodes:{
         type:[mongoose.Schema.Types.ObjectId],
         ref:"episodes",
-        default:[],
+        
+    },
+    views:{
+        type:Number,
+        default:0
     }
 },{
     timestamps:true

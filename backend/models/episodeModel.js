@@ -1,6 +1,10 @@
 const mongoose = require('mongoose')
 
 const episodeSchema = new mongoose.Schema({
+    podcast: { 
+        type: mongoose.Schema.Types.ObjectId,
+         ref: 'podcasts',
+         required: true },
     title:{
         type:String,
         required:true

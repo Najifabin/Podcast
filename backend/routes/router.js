@@ -10,9 +10,8 @@ router.post('/register',userController.registerController)
 
 // login
 router.post('/login',userController.loginController)
-console.log(multerMiddleware);
 
 // add-podcast
-router.post('/add-podcast',jwtMiddleware,multerMiddleware.single("podcastImg") ,podcastController.createPodcastController)
+router.post('/add-podcast',jwtMiddleware,multerMiddleware.any(),podcastController.createPodcastController)
 
 module.exports = router

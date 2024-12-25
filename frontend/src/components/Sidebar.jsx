@@ -123,11 +123,9 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
         // Append metadata as a JSON string
         reqBody.append(`episodes[${index}][title]`, episode.title);
         reqBody.append(`episodes[${index}][desc]`, episode.desc);
-
         // Append the podcast file
-        if (episode.podcastFile) {
-          reqBody.append(`episodes[${index}][file]`, episode.podcastFile);
-        }
+          reqBody.append(`episodes[${index}][podcastFile]`, episode.podcastFile);
+        
       });
     }
 

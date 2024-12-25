@@ -30,5 +30,5 @@ const fileFilter = (req, file, callback) => {
         callback(new Error('Invalid field name!'), false);
     }
 };
-const multerMiddlware = multer({storage})
-module.exports = multerMiddlware
+const multerMiddleware = multer({storage,fileFilter})
+module.exports = multerMiddleware
