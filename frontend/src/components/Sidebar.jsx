@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { PiGooglePodcastsLogoBold } from "react-icons/pi";
 import { MdHome } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
@@ -12,10 +12,14 @@ import { MdDarkMode } from "react-icons/md";
 import { IoMenu } from "react-icons/io5";
 import { Button, Modal } from "react-bootstrap";
 import { MdCloudUpload } from "react-icons/md";
+import { addPodcastAPI } from '../services/allAPI';
+import { addPodcastContext } from '../contexts/ContextShare';
 
 
 
 const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode }) => {
+  const { addPodcastResponse, setAddPodcastResponse } =
+    useContext(addPodcastContext);
   const [createDisabled, setCreateDisabled]=useState(false)
   const [backDisabled,setBackDisabled] = useState(false)
   const [showEpisode, setShowEpisode] = useState(false)
@@ -58,7 +62,12 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
       ]
     });
   }
-  const handleShow = () => setShow(true);
+  const handleShow = () => {
+    if(sessionStorage.getItem("token")){setShow(true)}
+    else{
+      alert("Please Login")
+    }
+  };
   useEffect(() => {
     if (
       podcastDetails.podcastImg.type == "image/png" ||
@@ -110,7 +119,7 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
   }, [podcastDetails]);
 
   // console.log(createDisabled);
-  const handleAddProject = ()=>{
+  const handleAddProject = async ()=>{
      const reqBody = new FormData()
      reqBody.append("title",podcastDetails.title)
     reqBody.append("desc", podcastDetails.desc);
@@ -128,7 +137,8 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
         
       });
     }
-
+    // console.log(reqBody);
+    
     const token = sessionStorage.getItem("token")
     if(token){
       const reqHeader = {
@@ -136,6 +146,26 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
         "Authorization": `Bearer ${token}`,
       };
       // make api call
+      try{
+        const result = await addPodcastAPI(reqBody,reqHeader)
+        console.log(result);
+        if(result.status==200){
+          alert(`${result?.data?.title} uploaded successfully`)
+          handleClose()
+          // share result to profile via context
+          setAddPodcastResponse(result)
+        }
+        else{
+          if(result.response.status==404){
+            alert(result.response.data)
+          }
+        }
+      }catch(err){
+        console.log(err);  
+      }
+
+    }else{
+      alert("Please Login")
     }
   }
 
@@ -413,9 +443,18 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
                         <option value="" disabled>
                           Select Category
                         </option>
-                        <option>Comedy</option>
-                        <option>Education</option>
+                        <option>Culture</option>
                         <option>Business</option>
+                        <option>education</option>
+                        <option>Health</option>
+                        <option>Comedy</option>
+                        <option>News</option>
+                        <option>Science</option>
+                        <option>History</option>
+                        <option>Religion</option>
+                        <option>Development</option>
+                        <option>Sports</option>
+                        <option>Crime</option>
                       </select>
                     </div>
                   </div>
@@ -444,7 +483,10 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
                 <h6>Episode Details:</h6>
                 {podcastDetails.episodes.map((episode, index) => (
                   <>
-                    <div key={index} className="flex flex-col w-full border rounded gap-3 p-3 mb-4">
+                    <div
+                      key={index}
+                      className="flex flex-col w-full border rounded gap-3 p-3 mb-4"
+                    >
                       <div className="rounded">
                         <input
                           onChange={(e) => {
@@ -457,10 +499,9 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
                           }}
                           accept={`${podcastDetails.format.toLowerCase()}/*`}
                           type="file"
-                          
                         />
                       </div>
-        
+
                       <div className="flex flex-col gap-3">
                         <input
                           value={episode.title}
@@ -530,7 +571,13 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
               >
                 Back
               </Button>
-              <Button disabled={createDisabled} onClick={()=>!createDisabled && handleAddProject()} variant="primary">Create</Button>
+              <Button
+                disabled={createDisabled}
+                onClick={() => !createDisabled && handleAddProject()}
+                variant="primary"
+              >
+                Create
+              </Button>
             </Modal.Footer>
           </>
         )}

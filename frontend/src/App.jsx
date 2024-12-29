@@ -3,7 +3,7 @@ import Pnf from "./pages/Pnf";
 import Dashboard from "./pages/Dashboard";
 import Favourites from "./pages/Favourites";
 import Profile from "./pages/Profile";
-import {useEffect, useState } from "react";
+import {useContext, useEffect, useState } from "react";
 import styled, { ThemeProvider } from "styled-components";
 import { darkTheme, lightTheme } from "./theme/Themes";
 import Sidebar from "./components/Sidebar";
@@ -11,6 +11,7 @@ import Nav from "./components/Nav";
 import Search from "./pages/Search";
 import PodcastDetails from "./pages/PodcastDetails";
 import DisplayPodcast from "./pages/DisplayPodcast";
+
 
 
 const Container = styled.div`
@@ -22,22 +23,13 @@ const Container = styled.div`
   overflow-y: hidden;
 `;
 function App() {
-  const [userName, setUserName] = useState("");
-  const [isLogin, setIsLogin] = useState(false);
+  // const { userLogin, setUserLogin } = useContext(loginContext);
+  
   const [darkMode, setDarkMode] = useState(true)
   const [isOpen, setIsOpen] = useState(false);
   const [mainTheme,setMainTheme] = useState(darkTheme)
 
-  useEffect(() => {
-    if (sessionStorage.getItem("token")) {
-      setIsLogin(true);
-      setUserName(
-        JSON.parse(sessionStorage.getItem("user")).username.split(" ")[0]
-      );
-    } else {
-      setIsLogin(false);
-    }
-  },[]); 
+   
 
   const setTheme = ()=>{
     if(darkMode){
@@ -63,9 +55,9 @@ function App() {
             setTheme={setTheme}
           />
           <div className="flex flex-col flex-1">
-            <Nav mainTheme={mainTheme} 
-            isLogin={isLogin} 
-            userName={userName} />
+            <Nav
+              mainTheme={mainTheme}
+            />
             <Routes>
               <Route path="/" element={<Dashboard mainTheme={mainTheme} />} />
               <Route
@@ -81,11 +73,11 @@ function App() {
                 element={<Profile mainTheme={mainTheme} />}
               />
               <Route
-                path="/podacst/:id"
+                path="/podcast/:id"
                 element={<PodcastDetails mainTheme={mainTheme} />}
               />
               <Route
-                path="/showpodcast/:type"
+                path="/showpodcasts/:type"
                 element={<DisplayPodcast mainTheme={mainTheme} />}
               />
               <Route path="/*" element={<Pnf />} />

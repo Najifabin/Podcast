@@ -1,48 +1,61 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { IoMdPerson } from "react-icons/io";
 import { Button, Modal, Spinner } from 'react-bootstrap';
 import { PiGooglePodcastsLogoBold } from "react-icons/pi";
 import { loginAPI, registerAPI } from '../services/allAPI';
-const Nav = ({mainTheme,isLogin,userName}) => {
+import { loginContext } from '../contexts/ContextShare';
+import SERVER_BASE_URL from '../services/serverUrl';
 
-  const [isSpinner,setIsSpinner] = useState(false)
+const Nav = ({ mainTheme }) => {
+  const [userDetails, setUserDetails] = useState({name:"",pic:""});
+  const [isLogin, setIsLogin] = useState(false);
+  const { userLogin, setUserLogin } = useContext(loginContext);
+  const [isSpinner, setIsSpinner] = useState(false);
   const navigate = useNavigate();
-  const [userInput,setUserInput] = useState({
-    username:"",email:"",password:""
-  })
+  const [userInput, setUserInput] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
   // console.log(userInput);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
-  const[isRegister,setIsRegister] = useState(true)
-
-  
-  const register = async (e)=>{
-    e.preventDefault()
-    if(userInput.username && userInput.email && userInput.password){
+  const [isRegister, setIsRegister] = useState(true);
+  useEffect(() => {
+      if (sessionStorage.getItem("token")) {
+        setIsLogin(true);
+        const user = JSON.parse(sessionStorage.getItem("user"));
+        setUserDetails({...userDetails,name:user.username,pic:user.profilePic})
+      } else {
+        setIsLogin(false);
+      }
+    }, [userLogin]);
+  const register = async (e) => {
+    e.preventDefault();
+    if (userInput.username && userInput.email && userInput.password) {
       // api call
-      try{
-        const result = await registerAPI(userInput)
-        if(result.status==200){
-          alert(`Welcome ${result.data?.username}, Please login`)
-          setIsRegister(true)
+      try {
+        const result = await registerAPI(userInput);
+        if (result.status == 200) {
+          alert(`Welcome ${result.data?.username}, Please login`);
+          setIsRegister(true);
           setUserInput({ username: "", email: "", password: "" });
-        }else{
-          if(result.status==406){
-            alert(result.response.data)
-            setIsRegister(true)
+        } else {
+          if (result.status == 406) {
+            alert(result.response.data);
+            setIsRegister(true);
             setUserInput({ username: "", email: "", password: "" });
           }
         }
-      }catch(err){
+      } catch (err) {
         console.log(err);
-        
       }
-    }else{
-      alert("Please fill the form")
+    } else {
+      alert("Please fill the form");
     }
-  }
+  };
 
   const login = async (e) => {
     e.preventDefault();
@@ -53,13 +66,14 @@ const Nav = ({mainTheme,isLogin,userName}) => {
         if (result.status == 200) {
           sessionStorage.setItem("user", JSON.stringify(result.data.user));
           sessionStorage.setItem("token", result.data.token);
-          setIsSpinner(true)
-          setTimeout(()=>{
-            navigate("/")
+          setIsSpinner(true);
+          setTimeout(() => {
+            navigate("/");
             setUserInput({ username: "", email: "", password: "" });
-            setIsSpinner(false)
-            handleClose()
-          },2000)
+            setIsSpinner(false);
+            handleClose();
+            setUserLogin(result);
+          }, 2000);
         } else {
           if (result.response.status == 404) {
             alert(result.response.data);
@@ -72,7 +86,6 @@ const Nav = ({mainTheme,isLogin,userName}) => {
       alert("Please fill the form");
     }
   };
-
 
   return (
     <>
@@ -88,25 +101,25 @@ const Nav = ({mainTheme,isLogin,userName}) => {
           }}
           className="text-2xl font-bold md:text-xl"
         >
-          Welcome, <span className='text-green-500'>{userName}</span>
+          Welcome, <span className="text-green-500">{userDetails.name}</span>
         </div>
 
-        {isLogin ? 
+        {isLogin ? (
           <>
             <Link to={"profile"} className="no-underline">
               <div
                 style={{
-                  height: "40px",
-                  width: "40px",
                   backgroundColor: `${mainTheme.text_secondary}`,
                 }}
-                className="rounded-full flex items-center justify-center text-2xl"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-2xl"
               >
-                N
+                {userDetails.pic ==""?
+                <>{userDetails.name.split("")[0]}</>
+                :<><img className='w-10 h-10 rounded-full ' src={`${SERVER_BASE_URL}/uploads/${userDetails.pic}`} alt="" /></>}
               </div>
             </Link>
           </>
-         : 
+        ) : (
           <>
             <div
               style={{
@@ -122,7 +135,7 @@ const Nav = ({mainTheme,isLogin,userName}) => {
               </button>
             </div>
           </>
-        }
+        )}
       </div>
 
       {/* login */}

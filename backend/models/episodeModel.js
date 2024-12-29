@@ -13,11 +13,6 @@ const episodeSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    creator:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"users",
-        required:true
-    },
     podcastFile:{
         type:String,
         required:true
@@ -25,6 +20,10 @@ const episodeSchema = new mongoose.Schema({
     duration:{
         type:String,
         default:""
+    },
+    userId:{
+        type : String,
+        required:true
     }
 },
 {

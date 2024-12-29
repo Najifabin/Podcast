@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req, file, callback) => {
-    if (file.fieldname === 'podcastImg') {
+    if (file.fieldname === 'podcastImg' || file.fieldname === 'profilePic') {
         // Allow only image files for the podcast image
         if (file.mimetype.startsWith('image/')) {
             callback(null, true);

@@ -1,13 +1,38 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaPlay } from 'react-icons/fa';
+import { FaHeadphones } from "react-icons/fa";
 import Episodecard from '../components/Episodecard';
 import { Button, Modal } from 'react-bootstrap';
+import Videoplayer from '../components/Videoplayer';
+import { useParams } from 'react-router-dom';
+import { allPodcastByIdAPI } from '../services/allAPI';
+import SERVER_BASE_URL from '../services/serverUrl';import {format} from 'timeago.js'
 
 const PodcastDetails = ({ mainTheme }) => {
-  const [show, setShow] = useState(false);
+  const {id} = useParams()
+  const [podcast,setPodcast] = useState()
+  const [user,setUser] = useState()
+  // const [show, setShow] = useState(false);
   
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  // const handleClose = () => setShow(false);
+  // const handleShow = () => setShow(true);
+
+  const getPodcast = async ()=>{
+    await allPodcastByIdAPI(id).then((res) => {
+      if (res.status === 200) {
+        // console.log(res.data);
+        setPodcast(res.data.podcastById);
+        setUser(res.data.user)
+
+      }
+    }).catch((err)=>{
+      console.log(err);
+      
+    })
+  }
+  useEffect(()=>{
+    getPodcast()
+  },[])
   return (
     <>
       <div className="h-full px-5 py-8 overflow-y-scroll flex flex-col gap-5">
@@ -34,24 +59,20 @@ const PodcastDetails = ({ mainTheme }) => {
           <img
             style={{ backgroundColor: `${mainTheme.text_secondary}` }}
             className="w-64 h-64 rounded-md object-cover"
-            src="https://i.scdn.co/image/ab6765630000ba8a5502c1cc6a793e4a6bf97faf"
+            src={`${SERVER_BASE_URL}/uploads/${podcast?.podcastImg}`}
           />
           <div className="flex flex-col gap-3 w-full">
             <div
               style={{ color: `${mainTheme.text_primary}` }}
               className="Title w-full text-3xl font-extrabold justify-between"
             >
-              The Tim Ferris Shown
+              {podcast?.title}
             </div>
             <div
               style={{ color: `${mainTheme.text_secondary}` }}
               className="Description text-sm font-semibold"
             >
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vel,
-              velit, inventore ipsa enim atque Lorem ipsum dolor sit, amet
-              consectetur adipisicing elit. Nemo vel ipsam nihil architecto
-              itaque, nam blanditiis, tempora, sit laborum eum nobis cum in quo
-              quisquam sint! Similique voluptates odio illo?
+              {podcast?.desc}
             </div>
             <div className=" flex flex-row gap-3 flex-wrap">
               <div
@@ -61,29 +82,46 @@ const PodcastDetails = ({ mainTheme }) => {
                 }}
                 className="px-3 py-1 text-xs md:text-sm rounded-xl"
               >
-                Tag
+                {podcast?.tags}
               </div>
             </div>
             <div className="flex flex-row items-center gap-16">
               <div className="flex flex-row items-center gap-2">
-                <div className="Avathar w-5 h-5 rounded-full bg-slate-300 flex items-center justify-center">
-                  N
+                <div className="Avathar w-7 h-7 rounded-full bg-slate-300 flex items-center justify-center">
+                  {user?.profilePic == "" ? (
+                    <>{user?.username.split("")[0]}</>
+                  ) : (
+                    <>
+                      <img
+                        className="w-7 h-7 rounded-full "
+                        src={`${SERVER_BASE_URL}/uploads/${user?.profilePic}`}
+                        alt=""
+                      />
+                    </>
+                  )}
                 </div>
-                <h4
+                <div
                   style={{ color: `${mainTheme.text_secondary}` }}
-                  className="Name overflow-hidden text-ellipsis whitespace-nowrap"
+                  className="font-semibold text-xl overflow-hidden text-ellipsis whitespace-nowrap"
                 >
-                  Name
-                </h4>
+                  {user?.username}
+                </div>
               </div>
-              <div className="Views text-xs text-slate-400">12 views</div>
-              <div className="Views text-xs text-slate-400">12 days ago</div>
-              <button
-                onClick={handleShow}
-                className="flex items-center text-white p-2.5 rounded-full z-10 bg-green-400  transition-all duration-300 ease-in-out shadow-xl"
-              >
-                <FaPlay size={18} />
-              </button>
+              <div className="Views text-xs text-slate-400">
+                {podcast?.views} views
+              </div>
+              <div className="Views text-xs text-slate-400">
+                {format(podcast?.createdAt)}
+              </div>
+              {podcast?.format == "Video" ? (
+                <div className="flex items-center text-white p-2.5 rounded-full z-10 bg-green-400  transition-all duration-300 ease-in-out shadow-xl">
+                  <FaPlay size={18} />
+                </div>
+              ) : (
+                <div className="flex items-center text-white p-2.5 rounded-full z-10 bg-green-400  transition-all duration-300 ease-in-out shadow-xl">
+                  <FaHeadphones size={18} />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -95,13 +133,21 @@ const PodcastDetails = ({ mainTheme }) => {
             All Episodes
           </div>
           <div className="flex flex-col gap-5">
-            <Episodecard mainTheme={mainTheme} />
+            {podcast?.episodes?.map((episode) => (
+              <Episodecard
+                key={episode._id}
+                mainTheme={mainTheme}
+                episode={episode}
+                img={podcast?.podcastImg}
+                type={podcast?.format}
+              />
+            ))}
           </div>
         </div>
       </div>
 
       {/* Video Modal */}
-      <Modal
+      {/* <Modal
         size="lg"
         centered
         show={show}
@@ -143,7 +189,8 @@ const PodcastDetails = ({ mainTheme }) => {
 
           <Button variant="primary">Next Episode</Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
+      {/* <Videoplayer show={show} handleClose={handleClose} /> */}
     </>
   );
 };

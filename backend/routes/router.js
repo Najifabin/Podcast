@@ -14,4 +14,36 @@ router.post('/login',userController.loginController)
 // add-podcast
 router.post('/add-podcast',jwtMiddleware,multerMiddleware.any(),podcastController.createPodcastController)
 
+// get dashboard
+router.get('/dashboard',podcastController.getDashboardpodcastController)
+
+// get userpodacsts
+router.get('/user-podcasts',jwtMiddleware,podcastController.getUserpodcastController
+
+)
+
+// get allpodacsts
+router.get('/all-podcasts',podcastController.getAllpodcastController
+
+)
+// get podcast by id 
+router.get('/get/:id',podcastController.getPodcastById
+)
+
+// get podcast by tag 
+router.get('/tags',podcastController.getByTag
+)
+
+// get podcast by category 
+router.get('/category',podcastController.getByCategory
+)
+// get podcast by search 
+router.get('/search',podcastController.getBySearch
+)
+// delete podcast
+router.delete('/podcasts/:id',jwtMiddleware,podcastController.deletePodcast
+)
+// edit profile
+router.put('/user/edit',jwtMiddleware,multerMiddleware.single("profilePic"),userController.editProfilePicController)
+
 module.exports = router

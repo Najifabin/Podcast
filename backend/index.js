@@ -10,7 +10,7 @@ const pCServer = express()
 pCServer.use(cors())
 pCServer.use(express.json())
 pCServer.use(router)
-
+pCServer.use('/uploads',express.static('./uploads'))
 const PORT = 3000 || process.env.PORT
 
 pCServer.listen(PORT,()=>{

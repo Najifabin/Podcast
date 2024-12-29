@@ -4,6 +4,7 @@ const podcastSchema = new mongoose.Schema({
     title:{
         type:String,
         required:true,
+        unique:true
     },
     desc:{
         type:String,
@@ -25,7 +26,10 @@ const podcastSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    
+    userId:{
+        type : String,
+        required:true
+    },
     episodes:{
         type:[mongoose.Schema.Types.ObjectId],
         ref:"episodes",

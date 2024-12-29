@@ -1,18 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
 import { MdFavorite } from "react-icons/md";
 import { FaPlay } from "react-icons/fa";
+import { FaHeadphones } from "react-icons/fa";
+import SERVER_BASE_URL from '../services/serverUrl';
+// import { Button, Modal } from 'react-bootstrap';
 
 
-const PodcastCard = ({ mainTheme }) => {
+const PodcastCard = ({ mainTheme,displayData,owner }) => {
+
   return (
     <>
       {/* connect using Link */}
 
-      <Link to={"podacst/:id"} className='no-underline'>
+      <Link to={`/podcast/${displayData._id}`} className="no-underline">
         <div
           style={{ backgroundColor: `${mainTheme.card}` }}
-          className="Card relative no-underline max-w-56 flex flex-col justify-start items-center p-4 rounded-md  shadow-2xl cursor-pointer 
+          className="Card relative no-underline min-w-48 max-w-56 flex flex-col justify-start items-center p-4 rounded-md  shadow-2xl cursor-pointer 
           hover:scale-105
           transition-all ease-in-out duration-300
            hover:shadow-xl hover:translate-y-px hover:brightness-125"
@@ -25,15 +29,28 @@ const PodcastCard = ({ mainTheme }) => {
               >
                 <MdFavorite size={16} />
               </button>
-              <div
-                style={{ top: "83%", right: "10%" }}
-                className="flex items-center text-white p-2.5 rounded-full z-10 bg-green-400 absolute transition-all duration-300 ease-in-out shadow-xl"
-              >
-                <FaPlay size={18} />
-              </div>
+              {displayData?.format == "Video" ? (
+                <>
+                  <div
+                    style={{ top: "83%", right: "10%" }}
+                    className="flex items-center text-white p-2.5 rounded-full z-10 bg-green-400 absolute transition-all duration-300 ease-in-out shadow-xl"
+                  >
+                    <FaPlay size={18} />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div
+                    style={{ top: "83%", right: "10%" }}
+                    className="flex items-center text-white p-2.5 rounded-full z-10 bg-green-400 absolute transition-all duration-300 ease-in-out shadow-xl"
+                  >
+                    <FaHeadphones size={18} />
+                  </div>
+                </>
+              )}
               <img
                 className="CardIMG rounded-md w-56 h-36 object-cover shadow-xl hover:shadow-2xl"
-                src="https://i.scdn.co/image/ab6765630000ba8aaebf288621ea86c79d44f12f"
+                src={`${SERVER_BASE_URL}/uploads/${displayData?.podcastImg}`}
                 alt=""
               />
             </div>
@@ -41,30 +58,44 @@ const PodcastCard = ({ mainTheme }) => {
               <div className="MainInfo flex w-full flex-col justify-start gap-1">
                 <div
                   style={{ color: `${mainTheme.text_primary}` }}
-                  className="Title max-w-full overflow-hidden text-ellipsis"
+                  className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap"
                 >
-                  The Tim Ferris Shown
+                  {displayData?.title}
                 </div>
                 <div
-                  style={{ color: `${mainTheme.text_secondary}` }}
-                  className="Description max-w-full overflow-hidden text-ellipsis text-xs font-normal"
+                  style={{
+                    color: `${mainTheme.text_secondary}`,
+                    height: "90px",
+                  }}
+                  className=" max-w-full overflow-hidden text-ellipsis text-xs font-normal"
                 >
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit. Vel,
-                  velit, inventore ipsa enim atque
+                  {displayData?.desc}
                 </div>
                 <div className="CrateerInfo flex items-center justify-between mt-3.5 gap-2">
                   <div className="flex gap-2 items-center justify-center">
                     <div className="Avathar w-6 h-6 rounded-full bg-slate-300 flex items-center justify-center">
-                      N
+                      {owner?.profilePic == "" ? (
+                        <>{owner?.username.split("")[0]}</>
+                      ) : (
+                        <>
+                          <img
+                            className="w-6 h-6 rounded-full "
+                            src={`${SERVER_BASE_URL}/uploads/${owner?.profilePic}`}
+                            alt=""
+                          />
+                        </>
+                      )}
                     </div>
                     <div
                       style={{ color: `${mainTheme.text_secondary}` }}
                       className="text-sm overflow-hidden text-ellipsis whitespace-nowrap"
                     >
-                      Name
+                      {owner?.username}
                     </div>
                   </div>
-                  <div className="Views text-xs text-slate-400">12 views</div>
+                  <div className="Views text-xs text-slate-400">
+                    {displayData?.views} views
+                  </div>
                 </div>
               </div>
             </div>
