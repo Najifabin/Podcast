@@ -14,12 +14,14 @@ import { Button, Modal } from "react-bootstrap";
 import { MdCloudUpload } from "react-icons/md";
 import { addPodcastAPI } from '../services/allAPI';
 import { addPodcastContext, loginContext } from '../contexts/ContextShare';
+import TokenAuth, { tokenContext } from '../contexts/TokenAuth';
 
 
 
 const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode }) => {
   const { addPodcastResponse, setAddPodcastResponse } =
     useContext(addPodcastContext);
+  const { authorisedUser, setAuthorisedUser } = useContext(tokenContext);
   const { userLogin, setUserLogin } = useContext(loginContext);
   const navigate = useNavigate()
   const [createDisabled, setCreateDisabled]=useState(false)
@@ -181,6 +183,7 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
 
     const logout = ()=>{
       sessionStorage.clear()
+      setAuthorisedUser(false)
       navigate("/")
       setUserLogin("please Login")
     }

@@ -11,6 +11,7 @@ import Nav from "./components/Nav";
 import Search from "./pages/Search";
 import PodcastDetails from "./pages/PodcastDetails";
 import DisplayPodcast from "./pages/DisplayPodcast";
+import TokenAuth, { tokenContext } from "./contexts/TokenAuth";
 
 
 
@@ -24,7 +25,7 @@ const Container = styled.div`
 `;
 function App() {
   // const { userLogin, setUserLogin } = useContext(loginContext);
-  
+  const { authorisedUser, setAuthorisedUser } = useContext(tokenContext);
   const [darkMode, setDarkMode] = useState(true)
   const [isOpen, setIsOpen] = useState(false);
   const [mainTheme,setMainTheme] = useState(darkTheme)
@@ -53,31 +54,33 @@ function App() {
             setTheme={setTheme}
           />
           <div className="flex flex-col flex-1">
-            <Nav
-              mainTheme={mainTheme}
-            />
+            <Nav mainTheme={mainTheme} />
             <Routes>
               <Route path="/" element={<Dashboard mainTheme={mainTheme} />} />
               <Route
                 path="/search"
                 element={<Search mainTheme={mainTheme} />}
               />
-              <Route
-                path="/favourites"
-                element={<Favourites mainTheme={mainTheme} />}
-              />
-              <Route
-                path="/profile"
-                element={<Profile mainTheme={mainTheme} />}
-              />
-              <Route
-                path="/podcast/:id"
-                element={<PodcastDetails mainTheme={mainTheme} />}
-              />
-              <Route
-                path="/showpodcasts/:type"
-                element={<DisplayPodcast mainTheme={mainTheme} />}
-              />
+              { authorisedUser &&
+                <>
+                  <Route
+                    path="/favourites"
+                    element={<Favourites mainTheme={mainTheme} />}
+                  />
+                  <Route
+                    path="/profile"
+                    element={<Profile mainTheme={mainTheme} />}
+                  />
+                  <Route
+                    path="/podcast/:id"
+                    element={<PodcastDetails mainTheme={mainTheme} />}
+                  />
+                  <Route
+                    path="/showpodcasts/:type"
+                    element={<DisplayPodcast mainTheme={mainTheme} />}
+                  />
+                </>
+              }
               <Route path="/*" element={<Pnf />} />
             </Routes>
           </div>

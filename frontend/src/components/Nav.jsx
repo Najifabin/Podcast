@@ -6,8 +6,10 @@ import { PiGooglePodcastsLogoBold } from "react-icons/pi";
 import { loginAPI, registerAPI } from '../services/allAPI';
 import { loginContext } from '../contexts/ContextShare';
 import SERVER_BASE_URL from '../services/serverUrl';
+import { tokenContext } from '../contexts/TokenAuth';
 
 const Nav = ({ mainTheme }) => {
+  const { authorisedUser, setAuthorisedUser } = useContext(tokenContext);
   const [userDetails, setUserDetails] = useState({name:"",pic:""});
   const [isLogin, setIsLogin] = useState(false);
   const { userLogin, setUserLogin } = useContext(loginContext);
@@ -27,7 +29,7 @@ const Nav = ({ mainTheme }) => {
       if (sessionStorage.getItem("token")) {
         setIsLogin(true);
         const user = JSON.parse(sessionStorage.getItem("user"));
-        setUserDetails({...userDetails,name:user.username,pic:user.profilePic})
+        setUserDetails({...userDetails,name:user.username,pic:user.profilePic})        
       } else {
         setIsLogin(false);
       }
@@ -67,6 +69,7 @@ const Nav = ({ mainTheme }) => {
           sessionStorage.setItem("user", JSON.stringify(result.data.user));
           sessionStorage.setItem("token", result.data.token);
           setIsSpinner(true);
+          setAuthorisedUser(true);
           setTimeout(() => {
             navigate("/");
             setUserInput({ username: "", email: "", password: "" });
