@@ -67,3 +67,13 @@ export const deletePodcastAPI = async (id,reqHeader)=>{
 export const updateUserAPI = async (reqBody,reqHeader)=>{
     return await commonAPI("PUT",`${SERVER_BASE_URL}/user/edit`,reqBody,reqHeader)
 }
+
+// favorite podcast
+export const favoritePodcastAPI = async (id,reqHeader)=>{
+    return await commonAPI("POST",`${SERVER_BASE_URL}/podcasts/favorite`,{id:id},reqHeader)
+}
+
+// get favorite podcast
+export const getFavoritePodcastAPI = async (reqHeader)=>{
+    return await commonAPI("GET",`${SERVER_BASE_URL}/favorites`,{},reqHeader)
+}

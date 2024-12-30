@@ -29,8 +29,6 @@ function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [mainTheme,setMainTheme] = useState(darkTheme)
 
-   
-
   const setTheme = ()=>{
     if(darkMode){
       setMainTheme(lightTheme)

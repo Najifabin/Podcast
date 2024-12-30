@@ -12,7 +12,7 @@ exports.registerController = async (req,res)=>{
             res.status(406).json("Email alrady exist...Please login")
         }else{
             const newUser = new users({
-                username,email,password,profilePic:""
+                username,email,password,profilePic:"",favorites:[]
             })
             await newUser.save()
             res.status(200).json(newUser)

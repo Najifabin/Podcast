@@ -1,7 +1,7 @@
 const podcasts = require('../models/podcastModel')
 const Episode = require('../models/episodeModel');
 const users = require('../models/userModel');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 // create podcast
 
 exports.createPodcastController = async (req,res)=>{
@@ -97,7 +97,7 @@ exports.getDashboardpodcastController = async (req,res)=>{
                 creator:user,
             }
     })
-        console.log("podcastWithUsers",podcastWithUsers);
+        // console.log("podcastWithUsers",podcastWithUsers);
         
         res.status(200).json(podcastWithUsers)
     }catch(err){
@@ -155,6 +155,8 @@ exports.getAllpodcastController = async (req,res)=>{
 // get podcast by id
 exports.getPodcastById = async (req,res)=>{
     try{
+        console.log("inside By Id");
+        
         const podcastById = await podcasts.findById(req.params.id).populate("episodes")
         const id = podcastById.userId
         const user = await users.findById(id)
@@ -244,5 +246,78 @@ exports.deletePodcast = async (req,res)=>{
     }catch(err){
         console.log(err);
     }       
+}
+
+// favorite podcast
+exports.favoritePodcastController = async (req,res)=>{
+    try{
+    console.log("inside favorite controller");
+    
+    const userId = req.userId
+    const user = await users.findById(userId)
+    console.log(user);
+    const podcast = await podcasts.findById(req.body.id)
+    console.log("podcast",podcast);
+    
+    let found = false
+    if(user._id.toString()==podcast.userId.toString()){
+        console.log("You can't favorite your own podcast");
+        
+        return res.status(403).json("You can't favorite your own podcast")
+    }
+    const favorites = user.favorites || []
+    const foundIndex = favorites.findIndex((fav)=>fav.toString()===req.body.id)
+    if(foundIndex!== -1){
+        const updatedUser = await users.findByIdAndUpdate(userId,{
+            $pull:{favorites:req.body.id}
+        },{new:true})
+        console.log("Updated User:", updatedUser);
+        res.status(200).json(updatedUser)
+    }else{
+        const updatedUser = await users.findByIdAndUpdate(userId,{
+            $push:{favorites:req.body.id}
+        },{new:true})
+        console.log("Updated User (Added):", updatedUser);
+        res.status(200).json(updatedUser);
+    }
+    }catch(err){
+        console.log("error in favorites controller");
+        res.status(401).json(err)    
+    }
+    
+}
+
+exports.getFavoritePodcastController = async (req,res)=>{
+    console.log("inside getFavoritePodcastController");
+    const userId = req.userId
+    try{
+        const user = await users.findById(userId)
+        const favoritePodcasts = await podcasts.find({_id:{$in:user.favorites}}).lean()
+        const userIds = favoritePodcasts.map((podcast)=>
+        {try {
+        return new mongoose.Types.ObjectId(podcast.userId);
+        } 
+        catch (err) {
+        console.error('Invalid userId:', podcast.userId, err);
+        return null; // Skip invalid IDs
+    }}).filter((id)=>id)
+        console.log("userIds",userIds);
+        
+        const allUsers = await users.find({ _id: { $in:userIds } })
+        // console.log("allUsers",allUsers);
+        const podcastWithUsers = favoritePodcasts.map((podcast)=>{
+            const user = allUsers.find((user)=>user._id.toString() === podcast.userId.toString())
+                return {
+                ...podcast,
+                creator:user,
+                }
+    })
+    console.log("podcastWithUsers",podcastWithUsers);
+    
+        res.status(200).json(podcastWithUsers)
+    }catch(err){
+        res.status(401).json(err) 
+    }
+    
 }
     

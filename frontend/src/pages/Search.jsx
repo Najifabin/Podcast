@@ -99,6 +99,7 @@ const Search = ({mainTheme}) => {
                       <>
                         <div className="mt-2">
                           <MoreResults
+                            key={podcast?._id}
                             mainTheme={mainTheme}
                             podcast={podcast}
                             owner={podcast.creator}

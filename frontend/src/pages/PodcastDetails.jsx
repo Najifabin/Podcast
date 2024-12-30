@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { FaPlay } from 'react-icons/fa';
 import { FaHeadphones } from "react-icons/fa";
 import Episodecard from '../components/Episodecard';
 import { Button, Modal } from 'react-bootstrap';
 import Videoplayer from '../components/Videoplayer';
 import { useParams } from 'react-router-dom';
-import { allPodcastByIdAPI } from '../services/allAPI';
+import { allPodcastByIdAPI, favoritePodcastAPI } from '../services/allAPI';
 import SERVER_BASE_URL from '../services/serverUrl';import {format} from 'timeago.js'
+import { MdFavorite } from 'react-icons/md';
+import { addPodcastContext } from '../contexts/ContextShare';
 
 const PodcastDetails = ({ mainTheme }) => {
+  const { addPodcastResponse, setAddPodcastResponse } =
+      useContext(addPodcastContext);
   const {id} = useParams()
-  const [podcast,setPodcast] = useState()
-  const [user,setUser] = useState()
+  const [podcast,setPodcast] = useState([])
+  const [user,setUser] = useState([])
+  const [userDetails,setUserDetails] = useState([])
+  const [favorite, setFavorite] = useState(false);
   // const [show, setShow] = useState(false);
   
   // const handleClose = () => setShow(false);
@@ -30,31 +36,73 @@ const PodcastDetails = ({ mainTheme }) => {
       
     })
   }
+  const toggleFavorite = async () => {
+     const token = sessionStorage.getItem("token");
+    //  console.log(token);
+     if (token) {
+       const reqHeader = {
+         Authorization: `Bearer ${token}`,
+       };
+       try {
+         const result = await favoritePodcastAPI(podcast?._id, reqHeader);
+         if (result.status == 200) {
+           setFavorite(!favorite);
+           setUserDetails(result.data)
+           sessionStorage.setItem("user", JSON.stringify(result.data));
+           setAddPodcastResponse(result.data)
+         } else {
+           alert(result.response.data);
+         }
+       } catch (err) {
+         console.log(err);
+       }
+     } else {
+       alert("Please Login");
+     }
+   };
   useEffect(()=>{
     getPodcast()
+    if (sessionStorage.getItem("token")) {
+      const userDetail = JSON.parse(sessionStorage.getItem("user"));
+      setUserDetails(userDetail);
+    }
   },[])
+
+   useEffect(() => {
+     if (userDetails?.favorites?.find((fav) => fav.toString() === podcast._id.toString())) {
+       setFavorite(true);
+     }
+   }, [user,addPodcastResponse])
+
+
   return (
     <>
       <div className="h-full px-5 py-8 overflow-y-scroll flex flex-col gap-5">
-        {/* <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                width: "100%",
-              }}
-            >
-              <Favorite onClick={() => favoritpodcast()}>
-                {favourite ? (
-                  <FavoriteIcon
-                    style={{ color: "#E30022", width: "16px", height: "16px" }}
-                  ></FavoriteIcon>
-                ) : (
-                  <FavoriteIcon
-                    style={{ width: "16px", height: "16px" }}
-                  ></FavoriteIcon>
-                )}
-              </Favorite>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            width: "100%",
+          }}
+        >
+          <button onClick={toggleFavorite}
+            style={{ backgroundColor: `${mainTheme.text_secondary}` }}
+            className="Favourite mt-1 p-0.5 rounded-full flex items-center z-10 shadow-green-700 backdrop-blur-sm"
+          >
+            {/* <div className="text-red-500">
+              <MdFavorite size={22} />
             </div> */}
+            {favorite ? (
+                  <div className="text-red-500">
+                    <MdFavorite size={22} />
+                  </div>
+                ) : (
+                  <div className="text-white">
+                    <MdFavorite size={22} />
+                  </div>
+                )}
+          </button>
+        </div>
         <div className="flex flex-col gap-5 md:flex-row ">
           <img
             style={{ backgroundColor: `${mainTheme.text_secondary}` }}

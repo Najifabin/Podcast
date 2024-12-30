@@ -46,4 +46,10 @@ router.delete('/podcasts/:id',jwtMiddleware,podcastController.deletePodcast
 // edit profile
 router.put('/user/edit',jwtMiddleware,multerMiddleware.single("profilePic"),userController.editProfilePicController)
 
+// favorite podcast
+router.post('/podcasts/favorite',jwtMiddleware,podcastController.favoritePodcastController)
+
+// get favourite podcasts
+router.get('/favorites',jwtMiddleware,podcastController.getFavoritePodcastController)
+
 module.exports = router

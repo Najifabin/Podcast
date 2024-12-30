@@ -3,7 +3,7 @@ import { PiGooglePodcastsLogoBold } from "react-icons/pi";
 import { MdHome } from "react-icons/md";
 import { IoSearch } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { MdLightMode } from "react-icons/md";
 import { FiLogOut } from "react-icons/fi";
@@ -20,6 +20,7 @@ import { addPodcastContext } from '../contexts/ContextShare';
 const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode }) => {
   const { addPodcastResponse, setAddPodcastResponse } =
     useContext(addPodcastContext);
+  const navigate = useNavigate()
   const [createDisabled, setCreateDisabled]=useState(false)
   const [backDisabled,setBackDisabled] = useState(false)
   const [showEpisode, setShowEpisode] = useState(false)
@@ -169,6 +170,14 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
     }
   }
 
+    const handlefavorites = (e) => {
+      if (!sessionStorage.getItem("token")) {
+        e.preventDefault()
+        alert("Please Login");
+        navigate("/");
+      }
+    };
+
   return (
     <>
       <div
@@ -232,7 +241,11 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
               </h5>
             </div>
           </Link>
-          <Link to={"/favourites"} className="no-underline">
+          <Link
+            onClick={(e) => handlefavorites(e)}
+            to={"/favourites"}
+            className="no-underline"
+          >
             <div className="flex text-lg p-4 hover:bg-gray-700">
               <div
                 style={{ color: `${mainTheme.text_primary}` }}

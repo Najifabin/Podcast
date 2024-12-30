@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
     },
     profilePic:{
         type:String
+    },favorites:{
+        type:[mongoose.Schema.Types.ObjectId],
+        ref:"podcasts",
+        default:[]
     }
 })
 

@@ -22,6 +22,8 @@ const Profile = ({mainTheme}) => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  console.log("userDetails", userDetails);
+  
   
   useEffect(()=>{
     if(sessionStorage.getItem("token")){
