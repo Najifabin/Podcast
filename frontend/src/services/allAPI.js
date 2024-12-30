@@ -77,3 +77,8 @@ export const favoritePodcastAPI = async (id,reqHeader)=>{
 export const getFavoritePodcastAPI = async (reqHeader)=>{
     return await commonAPI("GET",`${SERVER_BASE_URL}/favorites`,{},reqHeader)
 }
+
+// add view
+export const addViewAPI = async (id)=>{
+    return await commonAPI("POST",`${SERVER_BASE_URL}/addview/${id}`,{})
+}

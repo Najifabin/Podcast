@@ -181,13 +181,13 @@ const PodcastDetails = ({ mainTheme }) => {
             All Episodes
           </div>
           <div className="flex flex-col gap-5">
-            {podcast?.episodes?.map((episode) => (
+            {podcast?.episodes?.map((episode,index) => (
               <Episodecard
                 key={episode._id}
                 mainTheme={mainTheme}
                 episode={episode}
-                img={podcast?.podcastImg}
-                type={podcast?.format}
+                podcast={podcast}
+                index={index}
               />
             ))}
           </div>

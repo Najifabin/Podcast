@@ -320,4 +320,13 @@ exports.getFavoritePodcastController = async (req,res)=>{
     }
     
 }
-    
+
+// add view
+exports.addViewController = async (req,res)=>{
+    try{
+        await podcasts.findByIdAndUpdate(req.params.id,{$inc:{views:1}})
+        res.status(200).json("the view has been increased")
+    }catch(err){
+        res.status(401).json(err)
+    }
+}

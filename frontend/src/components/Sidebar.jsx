@@ -13,13 +13,14 @@ import { IoMenu } from "react-icons/io5";
 import { Button, Modal } from "react-bootstrap";
 import { MdCloudUpload } from "react-icons/md";
 import { addPodcastAPI } from '../services/allAPI';
-import { addPodcastContext } from '../contexts/ContextShare';
+import { addPodcastContext, loginContext } from '../contexts/ContextShare';
 
 
 
 const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode }) => {
   const { addPodcastResponse, setAddPodcastResponse } =
     useContext(addPodcastContext);
+  const { userLogin, setUserLogin } = useContext(loginContext);
   const navigate = useNavigate()
   const [createDisabled, setCreateDisabled]=useState(false)
   const [backDisabled,setBackDisabled] = useState(false)
@@ -178,6 +179,12 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
       }
     };
 
+    const logout = ()=>{
+      sessionStorage.clear()
+      navigate("/")
+      setUserLogin("please Login")
+    }
+
   return (
     <>
       <div
@@ -308,8 +315,7 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
               </>
             )}
           </button>
-          <Link to={"/login"} className="no-underline">
-            <div className="flex text-lg p-4 hover:bg-gray-700">
+            <button onClick={logout} className="flex w-full text-lg p-4 hover:bg-gray-700">
               <div
                 style={{ color: `${mainTheme.text_secondary}` }}
                 className="me-3"
@@ -322,8 +328,7 @@ const Sidebar = ({mainTheme,setTheme, isOpen, setIsOpen,setDarkMode, darkMode })
               >
                 Log Out
               </h5>
-            </div>
-          </Link>
+            </button>
         </div>
       </div>
 

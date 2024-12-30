@@ -52,4 +52,8 @@ router.post('/podcasts/favorite',jwtMiddleware,podcastController.favoritePodcast
 // get favourite podcasts
 router.get('/favorites',jwtMiddleware,podcastController.getFavoritePodcastController)
 
+// add view 
+router.post('/addview/:id',podcastController.addViewController)
+
+
 module.exports = router

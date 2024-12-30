@@ -54,9 +54,9 @@ const PodcastCard = ({ mainTheme,displayData,owner }) => {
    // console.log("displayData?._id", displayData?._id);
    // console.log("username",user?.username);
 
-   user?.favorites?.map((fav) => {
-     console.log("fav", fav);
-   });
+  //  user?.favorites?.map((fav) => {
+  //    console.log("fav", fav);
+  //  });
 
    if (
      user?.favorites?.find(

@@ -3,13 +3,22 @@ import { FaPlay } from 'react-icons/fa';
 import Videoplayer from './Videoplayer';
 import SERVER_BASE_URL from '../services/serverUrl';
 import Audioplayer from './Audioplayer';
+import { addViewAPI } from '../services/allAPI';
 
 
-const Episodecard = ({mainTheme,episode,img,type}) => {
-  const [show, setShow] = useState(false);
-    
+const Episodecard = ({mainTheme,episode,podcast,index}) => {
+  const [show, setShow] = useState(false); 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const addViewToPodcast = async ()=>{
+      try{
+        const result = await addViewAPI(podcast?._id)
+      }catch(err){
+        console.log(err);
+        
+      }
+    }
   return (
     <>
       <div
@@ -20,11 +29,13 @@ const Episodecard = ({mainTheme,episode,img,type}) => {
           <img
             style={{ backgroundColor: `${mainTheme.text_secondary}` }}
             className="w-28 h-28 rounded-md object-cover"
-            src={`${SERVER_BASE_URL}/uploads/${img}`}
+            src={`${SERVER_BASE_URL}/uploads/${podcast?.podcastImg}`}
           />
 
           <FaPlay
-            onClick={handleShow}
+            onClick={ ()=>{
+              addViewToPodcast()
+              handleShow()}}
             style={{
               position: "absolute",
               top: "26px",
@@ -52,10 +63,20 @@ const Episodecard = ({mainTheme,episode,img,type}) => {
         </div>
       </div>
 
-      {type == "Video" ? (
-        <Videoplayer show={show} handleClose={handleClose} episode={episode} />
+      {podcast?.format == "Video" ? (
+        <Videoplayer
+          show={show}
+          handleClose={handleClose}
+          podcast={podcast}
+          index={index}
+        />
       ) : (
-        <Audioplayer show={show} handleClose={handleClose} episode={episode} />
+        <Audioplayer
+          show={show}
+          handleClose={handleClose}
+          podcast={podcast}
+          index={index}
+        />
       )}
     </>
   );

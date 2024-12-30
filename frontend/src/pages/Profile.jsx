@@ -104,10 +104,10 @@ const Profile = ({mainTheme}) => {
       try{
          const result = await updateUserAPI(reqBody,reqHeader)
          if(result.status==200){
-          alert("Profile Updated")
+          // alert("Profile Updated")
           sessionStorage.setItem("user",JSON.stringify(result.data))
           handleClose()
-          setUserLogin("");
+          setUserLogin(JSON.stringify(result.data));
          }
       }catch(err){
         console.log(err);
@@ -136,10 +136,10 @@ const Profile = ({mainTheme}) => {
       try {
         const result = await updateUserAPI(reqBody, reqHeader);
         if (result.status == 200) {
-          alert("Profile Removed");
+          // alert("Profile Removed");
           sessionStorage.setItem("user", JSON.stringify(result.data));
           handleClose();
-          setUserLogin("removed");
+          setUserLogin(JSON.stringify(result.data));
         }
       } catch (err) {
         console.log(err);
